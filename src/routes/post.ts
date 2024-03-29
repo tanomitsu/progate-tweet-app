@@ -16,9 +16,9 @@ import {hasUserRetweetedPost} from "./retweet";
 export const postRouter = express.Router();
 
 postRouter.get("/", ensureAuthUser, async (req, res) => {
-  const postsWithUser = await getAllPosts();
+  const postsWithUserAndType = await getAllPosts();
   res.render("posts/index", {
-    posts: postsWithUser,
+    posts: postsWithUserAndType,
   });
 });
 

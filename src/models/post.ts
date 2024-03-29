@@ -8,10 +8,10 @@ import {
 type PostData = Pick<Post, "content" | "userId">;
 export type PostWithUser = Post & {user: UserWithoutPassword};
 export type PostWithUserAndType = PostWithUser & {
-  type: "Post" | "RetweetedPost";
+  retweetedBy: UserWithoutPassword | undefined;
 };
 
-export const selectPostWithUser = {
+export const selectPostColumnsWithUser = {
   id: true,
   content: true,
   userId: true,
@@ -85,7 +85,7 @@ export const getAllPosts = async (): Promise<PostWithUserAndType[]> => {
       createdAt: "desc",
     },
     select: {
-      ...selectPostWithUser,
+      ...selectPostColumnsWithUser,
     },
   });
 
@@ -97,7 +97,12 @@ export const getAllPosts = async (): Promise<PostWithUserAndType[]> => {
       createdAt: true,
       post: {
         select: {
-          ...selectPostWithUser,
+          ...selectPostColumnsWithUser,
+        },
+      },
+      user: {
+        select: {
+          ...selectUserColumnsWithoutPassword,
         },
       },
     },
@@ -113,10 +118,10 @@ export const getAllPosts = async (): Promise<PostWithUserAndType[]> => {
     .map(postOrRetweet => {
       if (postOrRetweet.typename === "Post") {
         // Posts
-        return {...postOrRetweet, type: "Post" as const};
+        return {...postOrRetweet, retweetedBy: undefined};
       }
       // Retweeted posts
-      return {...postOrRetweet.post, type: "RetweetedPost" as const};
+      return {...postOrRetweet.post, retweetedBy: postOrRetweet.user};
     });
   return sortedPosts;
 };
