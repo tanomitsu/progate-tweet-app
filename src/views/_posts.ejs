@@ -5,7 +5,9 @@
       <img src="<%= post.user.imageName %>">
     </div>
     <div class="post-right">
-      <%= post.retweetedBy && `${post.retweetedBy.name} Retweeted` %>
+      <div data-test="post-label">
+        <%= post.retweetedBy && `${post.retweetedBy.name} Retweeted` %>
+      </div>
       <div class="post-user-name">
         <a href="/users/<%= post.user.id %>" data-test="post-item-user">
           <%= post.user.name %>
