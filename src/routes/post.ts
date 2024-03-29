@@ -11,6 +11,8 @@ import {
 import {getPostLikedCount, hasUserLikedPost} from "@/models/like";
 import {ensureAuthUser} from "@/middlewares/authentication";
 import {ensureOwnerOfPost} from "@/middlewares/current_user";
+import {getPostRetweetedCount} from "@/models/retweet";
+import {hasUserRetweetedPost} from "./retweet";
 export const postRouter = express.Router();
 
 postRouter.get("/", ensureAuthUser, async (req, res) => {
@@ -43,11 +45,15 @@ postRouter.get("/:postId", ensureAuthUser, async (req, res, next) => {
   }
   const likeCount = await getPostLikedCount(post.id);
   const hasLiked = await hasUserLikedPost(currentUserId, post.id);
+  const retweetCount = await getPostRetweetedCount(post.id);
+  const hasRetweeted = await hasUserRetweetedPost(currentUserId, post.id);
   res.render("posts/show", {
     post,
     formatDate,
     likeCount,
     hasLiked,
+    retweetCount,
+    hasRetweeted,
   });
 });
 
