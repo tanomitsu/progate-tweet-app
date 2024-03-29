@@ -1,5 +1,5 @@
 import {User} from "@prisma/client";
-import {type PostWithUser} from "@/models/post";
+import {getAllPosts, type PostWithUser} from "@/models/post";
 import {databaseManager} from "@/db/index";
 
 type UserProfileData = Partial<Pick<User, "name" | "email" | "imageName">>;
@@ -53,27 +53,11 @@ export const getUserWithPosts = async (
     },
     select: {
       ...selectUserColumnsWithoutPassword,
-      posts: {
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          id: true,
-          content: true,
-          userId: true,
-          createdAt: true,
-          updatedAt: true,
-          user: {
-            select: {
-              ...selectUserColumnsWithoutPassword,
-            },
-          },
-        },
-      },
     },
   });
+  const posts = await getAllPosts(userId);
   if (user === null) return null;
-  return user;
+  return {...user, posts};
 };
 
 export const getUserLikedPosts = async (

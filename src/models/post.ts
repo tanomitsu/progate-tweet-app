@@ -78,9 +78,19 @@ export const getPost = async (postId: number): Promise<PostWithUser | null> => {
   return post;
 };
 
-export const getAllPosts = async (): Promise<PostWithUserAndType[]> => {
+/**
+ * getAllPosts
+ * @param {number | undefined} userId - 特定のユーザーのタイムラインを取得する場合は指定する。
+ * @returns - 投稿一覧
+ */
+export const getAllPosts = async (
+  userId?: number
+): Promise<PostWithUserAndType[]> => {
   const prisma = databaseManager.getInstance();
   const posts = await prisma.post.findMany({
+    where: {
+      userId,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -90,6 +100,9 @@ export const getAllPosts = async (): Promise<PostWithUserAndType[]> => {
   });
 
   const retweets = await prisma.retweet.findMany({
+    where: {
+      userId,
+    },
     orderBy: {
       createdAt: "desc",
     },
